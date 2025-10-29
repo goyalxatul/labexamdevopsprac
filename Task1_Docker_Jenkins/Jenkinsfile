@@ -2,37 +2,41 @@ pipeline {
     agent any
 
     stages {
+        stage('Checkout Code') {
+            steps {
+                echo 'Checking out source code...'
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
-                script {
-                    
-                    bat 'docker build -t myapp .'
-
-                }
+                echo 'Building Docker image...'
+                bat 'docker build -t myapp -f Task1_Docker_Jenkins/Dockerfile Task1_Docker_Jenkins'
             }
         }
 
         stage('Run Container') {
             steps {
-                script {
-                    bat 'docker run -d -p 5000:5000 --name devopslab_container devopslab_app'
-                }
+                echo 'Running Docker container...'
+                bat 'docker run -d -p 5000:5000 --name devopslab_container myapp'
             }
         }
 
         stage('Verify Running Container') {
             steps {
-                script {
-                    bat 'docker ps'
-                }
+                echo 'Verifying container...'
+                bat 'docker ps'
             }
         }
     }
 
     post {
         always {
-            bat 'docker stop devopslab_container || true'
-            bat 'docker rm devopslab_container || true'
+            echo 'Cleaning up container...'
+            bat '''
+            docker stop devopslab_container || exit 0
+            docker rm devopslab_container || exit 0
+            '''
         }
     }
 }
