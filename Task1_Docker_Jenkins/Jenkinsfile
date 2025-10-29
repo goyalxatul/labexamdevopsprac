@@ -30,13 +30,4 @@ pipeline {
         }
     }
 
-    post {
-        always {
-            echo 'Cleaning up container...'
-            bat '''
-            docker stop devopslab_container || exit 0
-            docker rm devopslab_container || exit 0
-            '''
-        }
-    }
 }
