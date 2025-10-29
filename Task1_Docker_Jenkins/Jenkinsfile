@@ -1,0 +1,36 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    sh 'docker build -t devopslab_app .'
+                }
+            }
+        }
+
+        stage('Run Container') {
+            steps {
+                script {
+                    sh 'docker run -d -p 5000:5000 --name devopslab_container devopslab_app'
+                }
+            }
+        }
+
+        stage('Verify Running Container') {
+            steps {
+                script {
+                    sh 'docker ps'
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            sh 'docker stop devopslab_container || true'
+            sh 'docker rm devopslab_container || true'
+        }
+    }
+}
